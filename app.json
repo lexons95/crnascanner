@@ -1,0 +1,12 @@
+{
+  "name": "crnascanner",
+  "displayName": "crnascanner",
+  "expo": {
+    "name": "crnascanner",
+    "slug": "crnascanner",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
