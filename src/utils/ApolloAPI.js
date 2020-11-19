@@ -272,7 +272,7 @@ const ADD_TENANT_CLIENT_MUTATION = gql`
 
 const CHANGE_STATE_RECEIPT_MUTATION = gql`
   mutation changeStateReceipt($id: String!, $updateCtr: Int!, $fromState: String!, $toState: String!) {
-    changeStateReceipt(id: $id, $updateCtr: $updateCtr, $fromState: $fromState, $toState: $toState)
+    changeStateReceipt(id: $id, updateCtr: $updateCtr, fromState: $fromState, toState: $toState)
   }
 `;
 
