@@ -108,7 +108,8 @@ const DataTabsScreen = ({ route, navigation }) => {
     return true
   }));
   let closedReceipts = receipts.filter((aReceipt=>{
-    return aReceipt.status == 'CLOSED'
+    // return aReceipt.status == 'C'
+    return true
   }));
 
   const renderScene = ({ route, jumpTo }) => {

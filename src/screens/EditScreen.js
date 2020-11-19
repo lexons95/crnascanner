@@ -11,7 +11,7 @@ import ImageZoomViewer from '../component/ImageZoomViewer';
 import LoadingComponent from '../component/LoadingComponent';
 
 import { AuthContext } from '../utils/AuthContext';
-import { useUpdateReceiptMutation, useDeleteReceiptMutation, useListsQuery } from '../utils/ApolloAPI';
+import { useUpdateReceiptMutation, useDeleteReceiptMutation, useListsQuery, useChangeStateReceiptMutation } from '../utils/ApolloAPI';
 import { COLOR, globalStyles } from '../constants/globalStyles';
 
 Icon.loadFont();
@@ -34,6 +34,7 @@ const EditScreen = ({ route, navigation }) => {
     })
   }
   const currentData = route.params && route.params['data'] ? route.params['data'] : null;
+  const currentStatus = route.params && route.params['status'] ? route.params['status'] : null;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -130,7 +131,13 @@ const EditScreen = ({ route, navigation }) => {
 
   const [ updateReceipt, { loading: updatingReceipt } ] = useUpdateReceiptMutation({
     onCompleted: (result) => {
-      // route.params.refetchListData();
+      navigation.goBack();
+    }
+  });
+
+  const [ changeStateReceipt, { loading: changeStateReceiptLoading } ] = useChangeStateReceiptMutation({
+    onCompleted: (result) => {
+      console.log('changeStateReceipt result',result)
       navigation.goBack();
     }
   });
@@ -230,7 +237,7 @@ const EditScreen = ({ route, navigation }) => {
 
   }
 
-  const handleOnSubmit = (changeStatus=false) => {
+  const handleOnSubmit = () => {
     const handleReplaceValue = (obj, from=undefined, to="", remove=false) => {
       let keys = Object.keys(obj);
       let result = Object.assign({},obj)
@@ -245,7 +252,6 @@ const EditScreen = ({ route, navigation }) => {
     let datetime = new Date(formValue["receiptDate"]);
     let result = {
       //...handleReplaceValue(formValue),
-      // receiptDate: formValue["receiptDate"]+"T00:00:00Z",
       receiptDate: datetime.toISOString(),
       receiptCategory: formValue["receiptCategory"],
       total: parseFloat(formValue["total"]),
@@ -254,24 +260,46 @@ const EditScreen = ({ route, navigation }) => {
       id: formValue.id,
       updateCtr: formValue.updateCtr
     }
-    // console.log('formValue',formValue)
-    console.log('result',result)
-
-    if (!changeStatus) {
-      updateReceipt({
-        variables: result
-      })
-    }
-    else {
-      updateReceipt({
-        variables: {
-          ...result,
-          status: "CLOSED"
-        }
-      })
-    }
-    // ($id: String!, $updateCtr: Int!, $bucket: String, $url: String, $receiptDate: DateTime, $description: String, $total: Float, $receiptCategory: String, $receiptCurrency: String, $supplier_id: String)
+    updateReceipt({
+      variables: result
+    })
   }
+
+  const handleChangeStateReceipt = () => {
+    let newState = "C";
+    if (currentStatus == "COMPLETED") {
+      newState = "COMPLETED"
+    }
+    Alert.alert(
+      "",
+      "Confirm Move?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel"
+        },
+        { text: "OK", onPress: () => {
+          changeStateReceipt({
+            variables: {
+              id: currentData.id,
+              updateCtr: currentData.updateCtr,
+              fromState: currentData.status,
+              toState: newState
+            }
+          })
+        } }
+      ],
+      { cancelable: false }
+    );
+
+  }
+  /*
+  C (Closed)
+  PENDING
+  COMPLETED
+  FAILED
+  */
 
   if (!currentData) {
     return (
@@ -492,7 +520,7 @@ const EditScreen = ({ route, navigation }) => {
       </ScrollView>
       <View style={styles.buttonContainer}>
         <Button mode="contained" onPress={handleOnSubmit} style={[styles.submitButton]}>Save</Button>
-        <Button mode="contained" onPress={()=>{handleOnSubmit(true)}} style={[styles.submitButton]}>Save & Move to Complete</Button>
+        <Button mode="contained" onPress={handleChangeStateReceipt} style={[styles.submitButton]}>{currentStatus == "COMPLETED" ? "Move to Draft" : "Move to Complete"}</Button>
       </View>
       <LoadingComponent show={updatingReceipt || deletingReceipt} />
     </SafeAreaView>

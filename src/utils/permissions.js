@@ -3,8 +3,10 @@ import {
   request,
   RESULTS,
   requestMultiple,
+  PERMISSIONS
 } from 'react-native-permissions';
 
+export {PERMISSIONS};
 // This function can be used anywhere as it supports multiple permissions. 
 // It checks for permissions and then requests for it.
 export async function checkMultiplePermissions(permissions) {

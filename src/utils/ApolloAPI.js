@@ -1,5 +1,5 @@
 import { useQuery, useLazyQuery, useMutation, gql } from '@apollo/client';
-
+import { Alert } from 'react-native';
 
 
 // gql
@@ -364,9 +364,16 @@ const defaultMutationOptions = (label=null) => {
     onError: (err) => {
       const { graphQLErrors, networkError } = err;
       // console.log(`${name} err`, err)
-      console.log(`${name} graphQLErrors`, graphQLErrors)
+      console.log(`${name} graphQLErrors`, JSON.stringify(graphQLErrors))
       console.log(`${name} networkError`, JSON.stringify(networkError))
-
+      Alert.alert(
+        "Error",
+        "",
+        [
+          { text: "OK", onPress: () => {} }
+        ],
+        { cancelable: false }
+      );
     }
   }
 }
@@ -381,6 +388,14 @@ const defaultQueryOptions = (label) => {
     onError: (err) => {
       const { graphQLErrors, networkError } = err;
       console.log(`${name} err`, err)
+      Alert.alert(
+        "Error",
+        "",
+        [
+          { text: "OK", onPress: () => {} }
+        ],
+        { cancelable: false }
+      );
       // console.log(`${name} graphQLErrors`, graphQLErrors)
       // console.log(`${name} networkError`, networkError)
     }
@@ -471,7 +486,7 @@ export const useAddTenantClientMutation = (options={}) => {
 
 export const useChangeStateReceiptMutation = (options={}) => {
   const mutationResult = useMutation(CHANGE_STATE_RECEIPT_MUTATION,{
-    ...defaultMutationOptions("useCHangeStateReceiptMutation"),
+    ...defaultMutationOptions("useChangeStateReceiptMutation"),
     ...options
   });
   

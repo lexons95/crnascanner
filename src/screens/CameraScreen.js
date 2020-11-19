@@ -6,7 +6,6 @@ import { RNCamera } from 'react-native-camera';
 import ImagePicker from 'react-native-image-crop-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
 
-import { PERMISSIONS } from 'react-native-permissions';
 // import Swiper from 'react-native-swiper';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 // import Icon from 'react-native-vector-icons/AntDesign';
@@ -16,7 +15,7 @@ import ImageZoomViewer from '../component/ImageZoomViewer';
 import { COLOR } from '../constants/globalStyles';
 import { useUploadReceiptMutation } from '../utils/ApolloAPI';
 import { AuthContext } from '../utils/AuthContext';
-import { checkMultiplePermissions } from "../utils/permissions";
+import { checkMultiplePermissions, PERMISSIONS } from "../utils/permissions";
 
 Icon.loadFont();
 
@@ -41,10 +40,10 @@ const CameraScreen = ({ route, navigation }) => {
   const [ previewVisible, setPreviewVisible ] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      const isPermissionGranted = await checkMultiplePermissions([PERMISSIONS.IOS.CAMERA])
-      setCameraPermission(isPermissionGranted);
-    })();
+      (async () => {
+        const isPermissionGranted = await checkMultiplePermissions([PERMISSIONS.IOS.CAMERA])
+        setCameraPermission(isPermissionGranted);
+      })();
   }, []);
 
   let headerStyle = {};
@@ -92,7 +91,7 @@ const CameraScreen = ({ route, navigation }) => {
     onError: (err) => {
       Alert.alert(
         "Error Uploading",
-        err,
+        "",
         [
           { text: "OK", onPress: () => {} }
         ],
@@ -199,6 +198,16 @@ const CameraScreen = ({ route, navigation }) => {
         console.log('ImagePicker err',err)
       });
       
+    }
+    else {
+      Alert.alert(
+        "No Permission to Photo library",
+        "",
+        [
+          { text: "OK", onPress: () => {} }
+        ],
+        { cancelable: false }
+      );
     }
   }
 
@@ -399,7 +408,7 @@ const CameraScreen = ({ route, navigation }) => {
   else if (!cameraPermission) {
     return (
       <View style={[styles.container, {alignItems:'center', justifyContent: 'center'}]}>
-        <Text>No Permission to Camera!</Text>
+        <Text>No Permission to Camera! Go to Setting</Text>
       </View>
     )
   }
