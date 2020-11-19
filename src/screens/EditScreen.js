@@ -51,23 +51,23 @@ const EditScreen = ({ route, navigation }) => {
   }, [navigation,currentData]);
 
   useEffect(()=>{
-    // setData(currentData);
-    // setFormValue(currentData);
-    setFormValue({
-      receiptDate: currentData['createdAt'],
-      supplier_id: currentData['supplier_id'],
-      receiptCategory: currentData['receiptCategory'],
-      total: currentData['total'],
-      receiptCurrency: currentData['receiptCurrency'],
-      description: currentData['description'],
-      id: currentData['id'],
-      updateCtr: currentData['updateCtr']
-    })
+    if (currentData) {
+      setFormValue({
+        receiptDate: currentData['createdAt'],
+        supplier_id: currentData['supplier_id'],
+        receiptCategory: currentData['receiptCategory'],
+        total: currentData['total'],
+        receiptCurrency: currentData['receiptCurrency'],
+        description: currentData['description'],
+        id: currentData['id'],
+        updateCtr: currentData['updateCtr']
+      })
+    }
 
     if (currentData != null) {
       setSelectedImages([currentData])
     }
-  },[]);
+  },[currentData]);
 
   const { data: categoryListData, error: categoryListError, loading: categoryListLoading } = useListsQuery({
     variables: {
@@ -320,7 +320,6 @@ const EditScreen = ({ route, navigation }) => {
       // borderRadius: 5,
       justifyContent: 'center',
       ...globalStyles.fieldInputStyle,
-      padding: 0
     },
     inputAndroid: {
       color: '#000'

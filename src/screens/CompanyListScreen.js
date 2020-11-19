@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useContext} from 'react';
 import { Button, FlatList, RefreshControl, StyleSheet, SafeAreaView } from 'react-native';
 import { List } from 'react-native-paper';
 import { AuthContext } from '../utils/AuthContext';
-import { useAddTenantClientMutation, useTenantsLazyQuery } from '../utils/ApolloAPI';
+import { useAddTenantClientMutation, useTenantsQuery } from '../utils/ApolloAPI';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { COLOR, globalStyles } from '../constants/globalStyles';
@@ -12,8 +12,6 @@ Icon.loadFont();
 const CompanyListScreen = ({ route, navigation }) => {
   const [ state, { setCompany } ] = useContext(AuthContext);
   const [refreshing, setRefreshing] = useState(false);
-
-  const [ data, setData ] = useState([]);
 
   let tenant = state && state.tenant ? state.tenant : null;
 
@@ -26,42 +24,34 @@ const CompanyListScreen = ({ route, navigation }) => {
     }
   }
   
-  const [ getCompany, { loading: loadingCompany, refetch }] = useTenantsLazyQuery({
+  const { data: companyData, loading: loadingCompany, refetch } = useTenantsQuery({
     variables: {
       filter: filter
     },
-    skip: tenant == null,
-    onCompleted: (result) => {
-      if (result && result.tenants) {
-        setData(result.tenants)
-      }
-    },
-    onError: (err) => {
-
-    }
+    skip: tenant == null
   })
 
-  useEffect(()=>{
-    if (tenant != null) {
-      getCompany()
+  let data = companyData && companyData.tenants ? companyData.tenants : []
+
+  const onRefresh = () => {
+    if (refetch) {
+      setRefreshing(true);
+      refetch().then(result=>{
+        setRefreshing(false);
+      }).catch(err=>{
+        console.log("refetch err", err)
+        setRefreshing(false);
+      })
     }
-  },[])
-
-
+  };
 
   const refreshControl = () => {
-    const onRefresh = useCallback(() => {
-      if (refetch) {
-        setRefreshing(true);
-        refetch().then(result=>{
-          setRefreshing(false);
-        }).catch(err=>{
-          console.log("refetch err", err)
-          setRefreshing(false);
-        })
-      }
-    }, []);
+    // if (refetch) {
+    //   return (<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />)
+    // }
+    // return null;
     return (<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />)
+
   }
 
   const handleOnPressItem = (data) => {

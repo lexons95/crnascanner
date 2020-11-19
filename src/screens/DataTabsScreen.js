@@ -148,7 +148,7 @@ const DataTabsScreen = ({ route, navigation }) => {
       />
       <LoadingComponent show={loadingReceipts && !refreshing} />
       {/* <View>
-        <Text>Suppliers, Add Receipt Button</Text>
+        <Text>Suppliers List</Text>
       </View> */}
     </View>
   );
