@@ -37,8 +37,10 @@ const client = new ApolloClient({
     typePolicies: {
       Query: {
         fields: {
-          project: {
-            merge: true,
+          receipts: {
+            merge(existing, incoming){
+              return incoming
+            }
           }
         }
       }
@@ -123,6 +125,8 @@ const AppScreens = () => {
                   <Stack.Screen name="DataTabsScreen" options={{ title: 'Data Tabs' }} component={DataTabsScreen} />
                   <Stack.Screen name="CameraScreen" options={{ title: 'On Camera', headerShown: true }} component={CameraScreen} />
                   <Stack.Screen name="EditScreen" options={{ title: 'Editing' }} component={EditScreen} />
+                  <Stack.Screen name="RegisterScreen" options={{ title: 'Sign Up' }} component={RegisterScreen} />
+
                 </>
               )
             }

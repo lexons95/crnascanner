@@ -50,6 +50,7 @@ const DataTabsScreen = ({ route, navigation }) => {
           onPress={() =>
             navigation.navigate('CameraScreen')
           }
+          style={styles.addReceiptButton}
         >
         <Icon name="add" size={20} style={styles.plusIcon}/>
       </TouchableOpacity>
@@ -100,16 +101,16 @@ const DataTabsScreen = ({ route, navigation }) => {
     // return aReceipt.status == 'PENDING'
     return true
   }));
-  let failedReceipts = receipts.filter((aReceipt=>{
-    return aReceipt.status == 'FAILED'
-  }));
+  // let failedReceipts = receipts.filter((aReceipt=>{
+  //   return aReceipt.status == 'FAILED'
+  // }));
   let completedReceipts = receipts.filter((aReceipt=>{
     // return aReceipt.status == 'COMPLETED'
     return true
   }));
   let closedReceipts = receipts.filter((aReceipt=>{
-    // return aReceipt.status == 'C'
-    return true
+    return aReceipt.status == 'C'
+    //return true
   }));
 
   const renderScene = ({ route, jumpTo }) => {
@@ -161,6 +162,13 @@ const styles = StyleSheet.create({
     flex: 1
   },
   plusIcon: {
-    marginRight: 15
+    // marginRight: 15
   },
+  addReceiptButton: {
+    // borderWidth: 1,
+    height: '100%',
+    justifyContent: 'center',
+    paddingHorizontal: 15
+    // marginRight: 15
+  }
 });

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext} from 'react';
-import { Button, FlatList, RefreshControl, StyleSheet, SafeAreaView } from 'react-native';
-import { List } from 'react-native-paper';
+import { FlatList, RefreshControl, StyleSheet, SafeAreaView } from 'react-native';
+import { List, Button } from 'react-native-paper';
 import { AuthContext } from '../utils/AuthContext';
 import { useAddTenantClientMutation, useTenantsQuery } from '../utils/ApolloAPI';
 
@@ -69,15 +69,24 @@ const CompanyListScreen = ({ route, navigation }) => {
   })
 
   const handleCreateTenant = () => {
-    addTenantClient({
-      variables: {
-        tenant_id: "FIRM123",
-        code: "CLIENTB123",
-        name: "Client B",
-        email: "clientB@hotmail.com",
-        contactPerson: "0188888888"
-      }
-    })
+    // addTenantClient({
+    //   variables: {
+    //     tenant_id: "QWE123",
+    //     code: "CLIENTQWE123",
+    //     name: "Client of QWE",
+    //     email: "clientqwe@hotmail.com",
+    //     contactPerson: "0188888888"
+    //   }
+    // })
+    // addTenantClient({
+    //   variables: {
+    //     tenant_id: "FIRM123",
+    //     code: "CLIENTB123",
+    //     name: "Client B",
+    //     email: "clientb@hotmail.com",
+    //     contactPerson: "0188888888"
+    //   }
+    // })
 
   }
 
@@ -89,6 +98,7 @@ const CompanyListScreen = ({ route, navigation }) => {
         keyExtractor={(item, index) => item + index}
         refreshControl={refreshControl()}
       />
+      {/* <Button onPress={()=>{handleCreateTenant()}}>Add client</Button> */}
       <LoadingComponent show={loadingCompany && !refreshing}/>
     </SafeAreaView>
   );

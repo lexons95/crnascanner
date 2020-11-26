@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   modalHeader: {
     backgroundColor: 'rgba(0,0,0,0.2)',
-    height: 95,
+    height: 80,
     // alignItems: "flex-end",
     // justifyContent: "flex-end",
     paddingBottom: 15,

@@ -207,7 +207,7 @@ const AuthContextProvider = ({ children }) => {
   const [ registerTenant, { loading: loadingRegisterTenant } ] = useRegisterTenantMutation({
     onCompleted: (result) => {
       console.log('registerTenant result',result)
-      dispatch({ type: 'RESTORE_TOKEN', token: "user-token" });
+      // dispatch({ type: 'RESTORE_TOKEN', token: "user-token" });
     },
     onError: (err) => {
       console.log('registerTenant err',err)
@@ -234,16 +234,7 @@ const AuthContextProvider = ({ children }) => {
   },[]);
 
   let isLoading = loadingTenants || loadingRegisterTenant || checkingUser || loadingLogout || loadingLogin
-console.log('isLoading', isLoading)
   useEffect(()=>{
-    console.log('isLoading ineffect', isLoading)
-
-    // if (state.isLoading && !isLoading) {
-    //   dispatch({ type: 'SET_LOADING', isLoading: true });
-    // }
-    // else if (!state.isLoading && isLoading) {
-    //   dispatch({ type: 'SET_LOADING', isLoading: false });
-    // }
     dispatch({ type: 'SET_LOADING', isLoading: isLoading });
   },[isLoading]);
 

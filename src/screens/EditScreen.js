@@ -226,8 +226,8 @@ const EditScreen = ({ route, navigation }) => {
         { text: "OK", onPress: () => {
           deleteReceipt({
             variables: {
-              id: formValue.id,
-              updateCtr: formValue.updateCtr
+              id: currentData['id'],
+              updateCtr: currentData['updateCtr']
             }
           })
         } }
@@ -266,7 +266,7 @@ const EditScreen = ({ route, navigation }) => {
   }
 
   const handleChangeStateReceipt = () => {
-    let newState = "C";
+    let newState = "PENDING";
     if (currentStatus == "COMPLETED") {
       newState = "COMPLETED"
     }

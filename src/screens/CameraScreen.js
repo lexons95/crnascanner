@@ -65,15 +65,6 @@ const CameraScreen = ({ route, navigation }) => {
           />
         )
       },
-      headerRight: (props) => (
-        <TouchableOpacity
-          activeOpacity={.4}
-          //style={styles.cameraTypeButton}
-          onPress={handleCameraFlashMode}
-        >
-          <Icon name={handleCameraFlashModeIcon()} size={iconSize} style={[styles.iconStyle, styles.cameraTypeIcon]} />
-        </TouchableOpacity>
-      ),
       headerStyle: {
         backgroundColor: 'black',
         borderColor: 'black',
@@ -81,7 +72,7 @@ const CameraScreen = ({ route, navigation }) => {
         elevation: 0,
       },
     });
-  }, [navigation,cameraFlashMode, selectedImages]);
+  }, [navigation, selectedImages]);
 
   const [ uploadReceipt, { loading: isUploading } ] = useUploadReceiptMutation({
     onCompleted: (result) => {
@@ -153,7 +144,7 @@ const CameraScreen = ({ route, navigation }) => {
     const isPermissionGranted = await checkMultiplePermissions([PERMISSIONS.IOS.PHOTO_LIBRARY])
 
     const multiSelect = false;
-    if (isPermissionGranted) {
+    // if (isPermissionGranted) {
       ImagePicker.openPicker({
         multiple: multiSelect
       }).then(images => {
@@ -198,17 +189,17 @@ const CameraScreen = ({ route, navigation }) => {
         console.log('ImagePicker err',err)
       });
       
-    }
-    else {
-      Alert.alert(
-        "No Permission to Photo library",
-        "",
-        [
-          { text: "OK", onPress: () => {} }
-        ],
-        { cancelable: false }
-      );
-    }
+    // }
+    // else {
+    //   Alert.alert(
+    //     "No Permission to Photo library",
+    //     "",
+    //     [
+    //       { text: "OK", onPress: () => {} }
+    //     ],
+    //     { cancelable: false }
+    //   );
+    // }
   }
 
   const handleTakePhoto = async () => {
@@ -332,66 +323,105 @@ const CameraScreen = ({ route, navigation }) => {
     setPreviewVisible(false);
   }
 
-  const cameraHeader = () => {
+  // const cameraHeader = () => {
+  //   return (
+  //     <View style={styles.cameraHeader}>
+  //       <TouchableOpacity
+  //         activeOpacity={.4}
+  //         style={styles.cameraTypeButton}
+  //         onPress={handleCameraFlashMode}
+  //       >
+  //         <Icon name={handleCameraFlashModeIcon()} size={iconSize} style={[styles.iconStyle, styles.cameraTypeIcon]} />
+  //       </TouchableOpacity>
+  //       <View>
+  //         <Text>
+  //           Header here
+  //         </Text>
+  //       </View>
+  //       <TouchableOpacity
+  //           activeOpacity={.4}
+  //           style={styles.cameraTypeButton}
+  //           onPress={handleCloseCamera}
+  //         >
+  //           <Icon name="close" size={iconSize} style={[styles.iconStyle, styles.cameraTypeIcon]} />
+  //       </TouchableOpacity>
+  //     </View>
+  //   )
+  // }
+  const cameraController = () => {
     return (
-      <View style={styles.cameraHeader}>
-        <TouchableOpacity
-          activeOpacity={.4}
-          style={styles.cameraTypeButton}
-          onPress={handleCameraFlashMode}
-        >
-          <Icon name={handleCameraFlashModeIcon()} size={iconSize} style={[styles.iconStyle, styles.cameraTypeIcon]} />
-        </TouchableOpacity>
-        <View>
-          <Text>
-            Header here
-          </Text>
-        </View>
-        <TouchableOpacity
-            activeOpacity={.4}
-            style={styles.cameraTypeButton}
-            onPress={handleCloseCamera}
-          >
-            <Icon name="close" size={iconSize} style={[styles.iconStyle, styles.cameraTypeIcon]} />
-        </TouchableOpacity>
-      </View>
-    )
-  }
-  const cameraFooter = () => {
-
-    return (
-      <View style={styles.cameraFooter}>
-        <View style={styles.footerButtonContainer}>
+      <View style={styles.cameraController}>
+        <View style={styles.cameraHeader}>
           <TouchableOpacity
             activeOpacity={.4}
-            onPress={handleImagePicker}
+            //style={styles.cameraTypeButton}
+            onPress={handleCameraFlashMode}
           >
-            <Icon name="photo" size={iconSize} style={[styles.iconStyle, styles.cameraTypeIcon]} />
+            <Icon name={handleCameraFlashModeIcon()} size={iconSize} style={[styles.iconStyle]} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          activeOpacity={.4}
-          style={[styles.cameraTypeButton,styles.captureButton]}
-          onPress={handleTakePhoto}
-        >
-          {
-            cameraSnapMode == cameraMode.MULTI && selectedImages.length > 0 ? <Text>{selectedImages.length}</Text> : null
-          }
-          {/* <Icon name="retweet" size={20} style={styles.cameraTypeIcon} /> */}
-        </TouchableOpacity>
-        <View style={styles.footerButtonContainer}>
-          {
-            selectedImages.length > 0 ? (
+        
+        <View style={styles.cameraContent}>
+
+        </View>
+
+        <View style={styles.cameraFooter}>
+
+          <View style={styles.cameraMode}>
+            <ToggleButton.Row onValueChange={value => handleCameraMode(value)} value={cameraSnapMode}>
+              <ToggleButton 
+                icon={({ size, color }) => {
+                  return (
+                    <Text style={isActiveSingle ? styles.activeMode : {color: 'white'}}>Single</Text>
+                  )
+                }} 
+                style={[styles.toggleButtonStyleSingle, isActiveSingle ? styles.activeMode : {}]} value={cameraMode.SINGLE} />
+              <ToggleButton 
+                icon={({ size, color }) => {
+                  return (
+                    <Text style={!isActiveSingle ? styles.activeMode : {color: 'white'}}>Multi</Text>
+                  )
+                }} 
+                style={[styles.toggleButtonStyleMulti, !isActiveSingle ? styles.activeMode : {}]} value={cameraMode.MULTI}/>
+            </ToggleButton.Row>
+          </View>
+
+          <View style={styles.cameraFooterItem2}>
+            <View style={styles.footerButtonContainer}>
               <TouchableOpacity
                 activeOpacity={.4}
-                style={styles.footerReviewButton}
-                onPress={()=>{handleOpenPreview()}}
+                onPress={handleImagePicker}
               >
-                <Text>Review</Text>
+                <Icon name="photo" size={iconSize} style={[styles.iconStyle, styles.cameraTypeIcon]} />
               </TouchableOpacity>
-            ) : null
-          }  
+            </View>
+            <TouchableOpacity
+              activeOpacity={.4}
+              style={[styles.cameraTypeButton,styles.captureButton]}
+              onPress={handleTakePhoto}
+            >
+              {
+                cameraSnapMode == cameraMode.MULTI && selectedImages.length > 0 ? <Text>{selectedImages.length}</Text> : null
+              }
+              {/* <Icon name="retweet" size={20} style={styles.cameraTypeIcon} /> */}
+            </TouchableOpacity>
+            <View style={styles.footerButtonContainer}>
+              {
+                selectedImages.length > 0 ? (
+                  <TouchableOpacity
+                    activeOpacity={.4}
+                    style={styles.footerReviewButton}
+                    onPress={()=>{handleOpenPreview()}}
+                  >
+                    <Text>Review</Text>
+                  </TouchableOpacity>
+                ) : null
+              }  
+            </View>
+          </View>
+
         </View>
+
       </View>
     )
   }
@@ -402,13 +432,6 @@ const CameraScreen = ({ route, navigation }) => {
     return (
       <View style={[styles.container, {alignItems:'center', justifyContent: 'center'}]}>
         <Text>Loading</Text>
-      </View>
-    )
-  }
-  else if (!cameraPermission) {
-    return (
-      <View style={[styles.container, {alignItems:'center', justifyContent: 'center'}]}>
-        <Text>No Permission to Camera! Go to Setting</Text>
       </View>
     )
   }
@@ -429,7 +452,6 @@ const CameraScreen = ({ route, navigation }) => {
           /> 
         ) : null
       }
-      {/* {cameraHeader()} */}
       <RNCamera
         ref={theCamera}
         style={styles.camera}
@@ -437,66 +459,8 @@ const CameraScreen = ({ route, navigation }) => {
         type={cameraType}
         flashMode={cameraFlashMode}
       >
-      <View style={styles.cameraMode}>
-        {/* <Swiper 
-          style={styles.wrapper} 
-          showsButtons={false}
-          loop={false}
-          autoplay={false}
-          renderPagination={(index, total, context)=>{
-            let singleStyle = styles.cameraModeOption;
-            let multiStyle = styles.cameraModeOption;
-            if (cameraSnapMode == cameraMode.SINGLE) {
-              singleStyle = [styles.cameraModeOption, styles.activeMode]
-            }
-            else {
-              multiStyle = [styles.cameraModeOption, styles.activeMode]
-            }
-            return (
-              <View style={styles.cameraModePagination}>
-                <TouchableOpacity
-                  activeOpacity={.4}
-                  style={singleStyle}
-                >
-                  <Text style={singleStyle}>{cameraMode.SINGLE}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  activeOpacity={.4}
-                  style={multiStyle}
-                >
-                  <Text style={multiStyle}>{cameraMode.MULTI}</Text>
-                </TouchableOpacity>
-              </View>
-
-            )
-          }}
-          onTouchEnd={(e, state, context)=>{
-            let mode = state.index == 0 ? cameraMode.MULTI : cameraMode.SINGLE;
-            handleCameraMode(mode)
-            handleClosePreview()
-          }}
-        >
-        </Swiper> */}
-
-        <ToggleButton.Row onValueChange={value => handleCameraMode(value)} value={cameraSnapMode}>
-          <ToggleButton 
-            icon={({ size, color }) => {
-              return (
-                <Text style={isActiveSingle ? styles.activeMode : {color: 'white'}}>Single</Text>
-              )
-            }} 
-            style={[styles.toggleButtonStyleSingle, isActiveSingle ? styles.activeMode : {}]} value={cameraMode.SINGLE} />
-          <ToggleButton 
-            icon={({ size, color }) => {
-              return (
-                <Text style={!isActiveSingle ? styles.activeMode : {color: 'white'}}>Multi</Text>
-              )
-            }} 
-            style={[styles.toggleButtonStyleMulti, !isActiveSingle ? styles.activeMode : {}]} value={cameraMode.MULTI}/>
-        </ToggleButton.Row>
-      </View>
+        {cameraController()}
       </RNCamera>
-      {cameraFooter()}
     </View>
   );
 }
@@ -516,23 +480,42 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width
   },
 
-  cameraHeader: {
-    backgroundColor: "#000",
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
+
+  cameraController: {
+    // backgroundColor: "#000",
+    // flex: 1,
+    // flexDirection: 'column',
+
+    width: '100%',
+    height: '100%',
     paddingHorizontal: 20,
-    paddingBottom: 20
+  },
+  cameraHeader: {
+    // backgroundColor: "#000",
+    // flex: 1,
+    // flexDirection: "row",
+    alignItems: "flex-end",
+    height: 50,
+    justifyContent: "center",
+    // paddingHorizontal: 20,
+    // paddingBottom: 20
+  },
+
+  cameraContent: {
+    flexGrow: 1,
   },
   cameraFooter: {
-    backgroundColor: "#000",
-    //flex: 1,
-    height: 100,
+    flexDirection: 'column',
+    height: 150,
+    justifyContent: 'center'
+
+  },
+  cameraFooterItem2: {
+    // height: 100,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
+    paddingVertical: 15
   },
 
   captureButton: {
@@ -563,10 +546,11 @@ const styles = StyleSheet.create({
     marginRight: 15
   },
   cameraMode: {
-    height: "100%",
+    // height: "100%",
     alignItems: 'center',
     justifyContent: 'flex-end',
-    paddingBottom: 10
+    // paddingBottom: 10
+
   },
 
   cameraModePagination: {

@@ -5,7 +5,7 @@ import { Button } from 'react-native-paper';
 import {AuthContext} from '../utils/AuthContext';
 import LoadingComponent from '../component/LoadingComponent';
 
-const SettingScreen = () => {
+const SettingScreen = ({navigation}) => {
   const [ state, { signOut, checkUser } ] = useContext(AuthContext);
 
   return (
@@ -16,6 +16,8 @@ const SettingScreen = () => {
       </Text>
       <Button onPress={()=>{checkUser()}}>Check User</Button>
       <Button onPress={()=>{signOut()}}>Logout</Button>
+      <Button onPress={()=>{navigation.navigate('RegisterScreen')}}>Register new Tenant</Button>
+      
       <LoadingComponent show={state.isLoading}/>
     </View>
   )
