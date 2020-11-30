@@ -5,7 +5,7 @@ import { HeaderBackButton } from '@react-navigation/stack';
 import { RNCamera } from 'react-native-camera';
 import ImagePicker from 'react-native-image-crop-picker';
 import { ReactNativeFile } from 'apollo-upload-client';
-
+import { useApolloClient, gql } from '@apollo/client';
 // import Swiper from 'react-native-swiper';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 // import Icon from 'react-native-vector-icons/AntDesign';
@@ -27,7 +27,7 @@ const cameraMode = {
 
 const CameraScreen = ({ route, navigation }) => {
   const [ state ] = useContext(AuthContext);
-
+  const client = useApolloClient()
   // const { onClose=null, onSubmit, isSubmitting=false } = props;
   const theCamera = useRef(null);
   const [ cameraPermission, setCameraPermission ] = useState(null);
@@ -38,6 +38,7 @@ const CameraScreen = ({ route, navigation }) => {
   const [ selectedImages, setSelectedImages ] = useState([]);
   const [ currentImageIndex, setCurrentImageIndex ] = useState(null);
   const [ previewVisible, setPreviewVisible ] = useState(false);
+  const [ uploading, setUploading ] = useState(false);
 
   useEffect(() => {
       (async () => {
@@ -143,10 +144,11 @@ const CameraScreen = ({ route, navigation }) => {
   const handleImagePicker = async () => {
     const isPermissionGranted = await checkMultiplePermissions([PERMISSIONS.IOS.PHOTO_LIBRARY])
 
-    const multiSelect = false;
+    const multiSelect = true;
     // if (isPermissionGranted) {
       ImagePicker.openPicker({
-        multiple: multiSelect
+        multiple: multiSelect,
+        maxFiles: 10
       }).then(images => {
         let result = [];
         if (!multiSelect) {
@@ -158,10 +160,22 @@ const CameraScreen = ({ route, navigation }) => {
         }
         else {
           result = images.map((anImage)=>{
-            return {
-              sourceURL: anImage.sourceURL,
-              mime: anImage.mime,
-              filename: anImage.filename
+            if (Platform.OS === 'android') {
+              let splittedFilePath = anImage.path.split('/');
+              let filename = splittedFilePath[splittedFilePath.length-1];
+              console.log('filename',filename)
+              return {
+                sourceURL: anImage.path,
+                mime: anImage.mime,
+                filename: filename
+              }
+            }
+            else {
+              return {
+                sourceURL: anImage.sourceURL,
+                mime: anImage.mime,
+                filename: anImage.filename
+              }
             }
           })
         }
@@ -200,6 +214,16 @@ const CameraScreen = ({ route, navigation }) => {
     //     { cancelable: false }
     //   );
     // }
+    if (isPermissionGranted == false) {
+      Alert.alert(
+        "No Permission to Photo library",
+        "",
+        [
+          { text: "OK", onPress: () => {} }
+        ],
+        { cancelable: false }
+      );
+    }
   }
 
   const handleTakePhoto = async () => {
@@ -291,20 +315,101 @@ const CameraScreen = ({ route, navigation }) => {
 
   const handleSubmit = (data=selectedImages) => {
     if (data.length > 0 && state.company != null && state.company.code) {
-      let image = data[0];
-      const theFile = new ReactNativeFile({
-        uri: image.sourceURL,
-        name: image.filename,
-        type: image.mime
-      });
-      uploadReceipt({
-        variables: {
-          "file": theFile,
-          "bucket": 'temp',
-          "tenant_id": state.company.code,
-          "total": 0
-        }
-      })
+
+
+      if (data.length > 1) {
+        // loop for mutation gql grand params
+        // loop for mutation uploadReceipt number
+        // loop for creating an object of all variables
+
+        let gqlParams = "";
+        let gqlFunctions = "";
+        let gqlVariables = {}
+        data.forEach((aData,index)=>{
+          gqlParams += `$file${index}: Upload!, $bucket${index}: String!, $tenant_id${index}: String!, $receiptDate${index}: DateTime, $description${index}: String, $total${index}: Float, $receiptCategory${index}: String, $receiptCurrency${index}: String, $supplier_id${index}: String`
+          if (index+1 != data.length) {
+            gqlParams += ","
+          }
+
+          gqlFunctions += `uploadReceipt${index}: uploadReceipt(file: $file${index}, bucket: $bucket${index}, tenant_id: $tenant_id${index}, receiptDate: $receiptDate${index}, description: $description${index}, total: $total${index}, receiptCategory: $receiptCategory${index}, receiptCurrency: $receiptCurrency${index}, supplier_id: $supplier_id${index}) {
+            id
+            status
+            updateCtr
+            bucket
+            createdAt
+            createdBy_id
+            encoding
+            filename
+            mimetype
+            originalFilename
+            updatedAt
+            updatedBy_id
+            url
+            tenant_id
+            receiptDate
+            description
+            total
+            receiptCategory
+            receiptCurrency
+            supplier_id
+            _label
+            status_label
+            receiptCategory_label
+            receiptCurrency_label
+            createdBy_label
+            updatedBy_label
+            tenant_label
+            supplier_label
+          }`
+
+          let image = aData;
+          const theFile = new ReactNativeFile({
+            uri: image.sourceURL,
+            name: image.filename,
+            type: image.mime
+          });
+          gqlVariables[`file${index}`] = theFile;
+          gqlVariables[`bucket${index}`] = "temp";
+          gqlVariables[`tenant_id${index}`] = state.company.code;
+          gqlVariables[`total${index}`] = 0;
+        })
+
+        let uploadReceipts_mutation = `
+          mutation uploadReceipt(${gqlParams}) {
+            ${gqlFunctions}
+          }
+        `
+        setUploading(true)
+        client.mutate({
+          variables: gqlVariables,
+          mutation: gql`${uploadReceipts_mutation}`
+        }).then((uploadResult)=>{
+          handleClosePreview();
+          navigation.goBack();
+          console.log('uploadResult',uploadResult)
+          setUploading(false)
+        }).catch(uploadErr=>{
+          setUploading(false)
+          console.log('uploadErr',uploadErr)
+        })
+
+      }
+      else {
+        let image = data[0];
+        const theFile = new ReactNativeFile({
+          uri: image.sourceURL,
+          name: image.filename,
+          type: image.mime
+        });
+        uploadReceipt({
+          variables: {
+            "file": theFile,
+            "bucket": 'temp',
+            "tenant_id": state.company.code,
+            "total": 0
+          }
+        })
+      }
     }
     else {
       console.log('Data not completed')
@@ -318,36 +423,13 @@ const CameraScreen = ({ route, navigation }) => {
   };
 
   const handleClosePreview = () => {
-    setSelectedImages([])
-    setCurrentImageIndex(null)
+    if (cameraSnapMode != cameraMode.MULTI) {
+      setSelectedImages([])
+      setCurrentImageIndex(null)
+    }
     setPreviewVisible(false);
   }
 
-  // const cameraHeader = () => {
-  //   return (
-  //     <View style={styles.cameraHeader}>
-  //       <TouchableOpacity
-  //         activeOpacity={.4}
-  //         style={styles.cameraTypeButton}
-  //         onPress={handleCameraFlashMode}
-  //       >
-  //         <Icon name={handleCameraFlashModeIcon()} size={iconSize} style={[styles.iconStyle, styles.cameraTypeIcon]} />
-  //       </TouchableOpacity>
-  //       <View>
-  //         <Text>
-  //           Header here
-  //         </Text>
-  //       </View>
-  //       <TouchableOpacity
-  //           activeOpacity={.4}
-  //           style={styles.cameraTypeButton}
-  //           onPress={handleCloseCamera}
-  //         >
-  //           <Icon name="close" size={iconSize} style={[styles.iconStyle, styles.cameraTypeIcon]} />
-  //       </TouchableOpacity>
-  //     </View>
-  //   )
-  // }
   const cameraController = () => {
     return (
       <View style={styles.cameraController}>
@@ -448,7 +530,7 @@ const CameraScreen = ({ route, navigation }) => {
             currentIndex={currentImageIndex}
             setCurrentIndex={setCurrentImageIndex}
             actions={handleSubmit}
-            loading={isUploading}
+            loading={uploading}
           /> 
         ) : null
       }

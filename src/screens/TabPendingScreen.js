@@ -19,7 +19,7 @@ import {AuthContext} from '../utils/AuthContext';
 
 Icon.loadFont();
 
-const TabProcessingScreen = (props) => {
+const TabPendingScreen = (props) => {
   const [ state ] = useContext(AuthContext);
   const { listData=[], refetchListData=null, refreshControl } = props;
 
@@ -130,7 +130,7 @@ const TabProcessingScreen = (props) => {
   )
 }
 
-export default TabProcessingScreen;
+export default TabPendingScreen;
 
 
 const styles = StyleSheet.create({

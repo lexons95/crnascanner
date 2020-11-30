@@ -9,6 +9,7 @@ import RNPickerSelect from 'react-native-picker-select';
 // import RNPickerSelect from '../component/RNPickerSelect/RNPickerSelect';
 import ImageZoomViewer from '../component/ImageZoomViewer';
 import LoadingComponent from '../component/LoadingComponent';
+import RNDateTimePicker from '../component/DateTimePicker';
 
 import { AuthContext } from '../utils/AuthContext';
 import { useUpdateReceiptMutation, useDeleteReceiptMutation, useListsQuery, useChangeStateReceiptMutation } from '../utils/ApolloAPI';
@@ -266,10 +267,13 @@ const EditScreen = ({ route, navigation }) => {
   }
 
   const handleChangeStateReceipt = () => {
-    let newState = "PENDING";
+    let newState = "";
     if (currentStatus == "COMPLETED") {
-      newState = "COMPLETED"
+      newState = "C"
     }
+    // else if (currentStatus == "COMPLETED") {
+    //   newState = "COMPLETED"
+    // }
     Alert.alert(
       "",
       "Confirm Move?",
@@ -378,7 +382,7 @@ const EditScreen = ({ route, navigation }) => {
           </View>
           <View style={styles.fieldContainer}>
             {/* <Text style={[styles.fieldLabel, {marginBottom: 15}]}>Receipt Date</Text> */}
-            <DatePicker
+            {/* <DatePicker
               style={{width: "100%", height: 55, borderColor: COLOR.GRAY, justifyContent: 'flex-start', alignItems: 'flex-start', marginBottom: 0}}
               date={formValue['receiptDate']}
               mode="date"
@@ -402,6 +406,10 @@ const EditScreen = ({ route, navigation }) => {
               confirmBtnText={"Done"}
               showIcon={false}
               onDateChange={(date) => {handleUpdateFormValue('receiptDate',date)}}
+            /> */}
+            <RNDateTimePicker 
+              value={new Date(formValue['receiptDate'])}
+              onChange={(date) => {handleUpdateFormValue('receiptDate',date)}}
             />
           </View>
           <View style={styles.fieldContainer}>
@@ -519,7 +527,10 @@ const EditScreen = ({ route, navigation }) => {
       </ScrollView>
       <View style={styles.buttonContainer}>
         <Button mode="contained" onPress={handleOnSubmit} style={[styles.submitButton]}>Save</Button>
-        <Button mode="contained" onPress={handleChangeStateReceipt} style={[styles.submitButton]}>{currentStatus == "COMPLETED" ? "Move to Draft" : "Move to Complete"}</Button>
+        {
+          currentStatus == "COMPLETED" ? <Button mode="contained" onPress={handleChangeStateReceipt} style={[styles.submitButton]}>Move to Closed</Button> : null
+        }
+        
       </View>
       <LoadingComponent show={updatingReceipt || deletingReceipt} />
     </SafeAreaView>

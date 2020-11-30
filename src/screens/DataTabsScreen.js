@@ -5,9 +5,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { useReceiptsQuery, useListsQuery } from '../utils/ApolloAPI';
 
-import TabProcessingScreen from './TabProcessingScreen';
-import TabDraftScreen from './TabDraftScreen';
-import TabCompleteScreen from './TabCompleteScreen';
+import TabPendingScreen from './TabPendingScreen';
+import TabCompletedScreen from './TabCompletedScreen';
+import TabClosedScreen from './TabClosedScreen';
 
 import { COLOR } from '../constants/globalStyles';
 import LoadingComponent from '../component/LoadingComponent';
@@ -20,9 +20,9 @@ const DataTabsScreen = ({ route, navigation }) => {
 
   const [index, setIndex] = React.useState(1);
   const [routes] = React.useState([
-    { key: 'processing', title: 'Processing' },
-    { key: 'draft', title: 'Draft' },
-    { key: 'completed', title: 'Completed' }
+    { key: 'pending', title: 'Pending' },
+    { key: 'completed', title: 'Completed' },
+    { key: 'closed', title: 'Closed' }
   ]);
   const [refreshing, setRefreshing] = useState(false);
   const tabsRef = useRef(null);
@@ -80,7 +80,10 @@ const DataTabsScreen = ({ route, navigation }) => {
       filter: {
         where: {
           tenant_id: data && data.code ? data.code : ""
-        }
+        },
+        order: [
+          ["createdAt", "ASC"]
+        ]
       }
     },
     skip: data == null,
@@ -98,15 +101,15 @@ const DataTabsScreen = ({ route, navigation }) => {
   let receipts = data == null ? [] : (receiptsData && receiptsData.receipts ? JSON.parse(JSON.stringify(receiptsData.receipts)) : [])
 
   let pendingReceipts = receipts.filter((aReceipt=>{
-    // return aReceipt.status == 'PENDING'
-    return true
+    return aReceipt.status == 'PENDING'
+    //return true
   }));
   // let failedReceipts = receipts.filter((aReceipt=>{
   //   return aReceipt.status == 'FAILED'
   // }));
   let completedReceipts = receipts.filter((aReceipt=>{
-    // return aReceipt.status == 'COMPLETED'
-    return true
+    return aReceipt.status == 'COMPLETED'
+    //return true
   }));
   let closedReceipts = receipts.filter((aReceipt=>{
     return aReceipt.status == 'C'
@@ -115,12 +118,12 @@ const DataTabsScreen = ({ route, navigation }) => {
 
   const renderScene = ({ route, jumpTo }) => {
     switch (route.key) {
-      case 'processing':
-        return <TabProcessingScreen jumpTo={jumpTo} data={data} listData={pendingReceipts} refetchListData={refetch} refreshControl={refreshControl} />;
-      case 'draft':
-        return <TabDraftScreen jumpTo={jumpTo} data={data} navigation={navigation} listData={completedReceipts} refetchListData={refetch} refreshControl={refreshControl} />;
-      case 'completed': 
-        return <TabCompleteScreen jumpTo={jumpTo} data={data} navigation={navigation} listData={closedReceipts} refetchListData={refetch} refreshControl={refreshControl} />
+      case 'pending':
+        return <TabPendingScreen jumpTo={jumpTo} data={data} listData={pendingReceipts} refetchListData={refetch} refreshControl={refreshControl} />;
+      case 'completed':
+        return <TabCompletedScreen jumpTo={jumpTo} data={data} navigation={navigation} listData={completedReceipts} refetchListData={refetch} refreshControl={refreshControl} />;
+      case 'closed': 
+        return <TabClosedScreen jumpTo={jumpTo} data={data} navigation={navigation} listData={closedReceipts} refetchListData={refetch} refreshControl={refreshControl} />
     }
   };
 

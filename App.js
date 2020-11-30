@@ -11,6 +11,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { BatchHttpLink } from "@apollo/client/link/batch-http";
+import { RetryLink } from '@apollo/client/link/retry';
+
 import { createUploadLink } from 'apollo-upload-client';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -32,6 +35,19 @@ import { COLOR } from './src/constants/globalStyles';
 
 Icon.loadFont();
 
+const API_URL = 'http://graphql.lollipoplab.io:4000/graphql'
+const uploadLink = createUploadLink({
+  uri: API_URL,
+  credentials: "include"
+});
+
+const batchHttpLink = new BatchHttpLink({ uri: API_URL, headers: { batch: "true " }, credentials: "include" });
+
+const link = new RetryLink().split(
+  operation => operation.getContext().important === true,
+  batchHttpLink,
+  uploadLink,
+)
 const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: {
@@ -46,11 +62,7 @@ const client = new ApolloClient({
       }
     }
   }),
-  link: createUploadLink({
-    uri: 'http://graphql.lollipoplab.io:4000/graphql',
-    // uri: API_URL,
-    credentials: "include"
-  })
+  link: uploadLink
 });
 
 const Stack = createStackNavigator();
