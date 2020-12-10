@@ -7,21 +7,13 @@ import {AuthContext} from '../utils/AuthContext';
 const RegisterScreen = ({navigation}) => {
   const [ state, { signUp } ] = useContext(AuthContext);
 
-  // const [ formValue, setFormValue ] = useState({
-  //   code: "",
-  //   name: "",
-  //   email: "",
-  //   password: "",
-  //   confirmPassword: "",
-  //   contactPerson: ""
-  // })
   const [ formValue, setFormValue ] = useState({
-    code: "QWE123",
-    name: "QWE FIRM KL",
-    email: "qwe@hotmail.com",
-    password: "password",
-    confirmPassword: "password",
-    contactPerson: "012345678"
+    code: "",
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    contactPerson: ""
   })
 
   const handleUpdateFormValue = (fieldKey, value) => {

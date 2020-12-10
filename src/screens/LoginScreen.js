@@ -12,8 +12,8 @@ const LoginScreen = ({navigation}) => {
   // const [ username, setUsername ] = useState('');
   // const [ password, setPassword ] = useState('');
   // const [ username, setUsername ] = useState('system');
+  const [ username, setUsername ] = useState('zxc@hotmail.com');
   const [ password, setPassword ] = useState('password');
-  const [ username, setUsername ] = useState('afk@hotmail.com');
 
 
   const onSubmit = () => {

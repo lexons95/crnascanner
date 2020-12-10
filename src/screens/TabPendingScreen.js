@@ -12,6 +12,7 @@ import {
   Image
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import FastImage from 'react-native-fast-image'
 
 import { useDeleteReceiptMutation } from '../utils/ApolloAPI';
 import ImageZoomViewer from '../component/ImageZoomViewer';
@@ -108,7 +109,7 @@ const TabPendingScreen = (props) => {
                   onPress={() => {
                     handleOpenModal(index);
                   }}>
-                  <Image
+                  <FastImage
                     style={styles.imageStyle}
                     source={{
                       uri: item.url,
@@ -150,6 +151,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     margin: 1.5,
     aspectRatio:1,
+    backgroundColor: 'rgba(0,0,0,0.2)'
     // borderWidth: 1,
     //justifyContent: "center"
   },

@@ -314,8 +314,8 @@ const CameraScreen = ({ route, navigation }) => {
   }
 
   const handleSubmit = (data=selectedImages) => {
-    if (data.length > 0 && state.company != null && state.company.code) {
 
+    if (data.length > 0 && state.company != null && state.company.code) {
 
       if (data.length > 1) {
         // loop for mutation gql grand params
@@ -384,10 +384,10 @@ const CameraScreen = ({ route, navigation }) => {
           variables: gqlVariables,
           mutation: gql`${uploadReceipts_mutation}`
         }).then((uploadResult)=>{
+          setUploading(false)
           handleClosePreview();
           navigation.goBack();
           console.log('uploadResult',uploadResult)
-          setUploading(false)
         }).catch(uploadErr=>{
           setUploading(false)
           console.log('uploadErr',uploadErr)
@@ -395,6 +395,7 @@ const CameraScreen = ({ route, navigation }) => {
 
       }
       else {
+
         let image = data[0];
         const theFile = new ReactNativeFile({
           uri: image.sourceURL,

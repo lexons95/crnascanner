@@ -72,6 +72,17 @@ const RECEIPT_FRAGMENT = gql`
   }
 `;
 
+const RECEIPT_BANK_FRAGMENT = gql`
+  fragment receiptBankFragment on ReceiptBank {
+    code
+    name
+    status
+    updateCtr
+    _label
+    status_label
+  }
+`;
+
 // const LISTGROUP_FRAGMENT = gql`
 //   fragment listGroupFragment on ListGroup {
 //     code
@@ -273,6 +284,19 @@ const ADD_TENANT_CLIENT_MUTATION = gql`
 const CHANGE_STATE_RECEIPT_MUTATION = gql`
   mutation changeStateReceipt($id: String!, $updateCtr: Int!, $fromState: String!, $toState: String!) {
     changeStateReceipt(id: $id, updateCtr: $updateCtr, fromState: $fromState, toState: $toState)
+  }
+`;
+
+const CREATE_RECEIPT_BANK_MUTATION = gql`
+  mutation createReceiptBank($code: String!, $name: String!) {
+    createReceiptBank(code: $code, name: $name) {
+      code
+      name
+      status
+      updateCtr
+      _label
+      status_label
+    }
   }
 `;
 
@@ -492,6 +516,16 @@ export const useChangeStateReceiptMutation = (options={}) => {
   
   return mutationResult;
 }
+
+export const useCreateReceiptBankMutation = (options={}) => {
+  const mutationResult = useMutation(CREATE_RECEIPT_BANK_MUTATION,{
+    ...defaultMutationOptions("useCreateReceiptBankMutation"),
+    ...options
+  });
+  
+  return mutationResult;
+}
+
 
 
 // query

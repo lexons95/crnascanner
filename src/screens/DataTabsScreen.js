@@ -22,7 +22,7 @@ const DataTabsScreen = ({ route, navigation }) => {
   const [routes] = React.useState([
     { key: 'pending', title: 'Pending' },
     { key: 'completed', title: 'Completed' },
-    { key: 'closed', title: 'Closed' }
+    { key: 'closed', title: 'Ready' }
   ]);
   const [refreshing, setRefreshing] = useState(false);
   const tabsRef = useRef(null);

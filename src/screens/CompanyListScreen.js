@@ -66,28 +66,18 @@ const CompanyListScreen = ({ route, navigation }) => {
     onError: (err) => {
       console.log('addTenantClient err', err)
     }
-  })
+  });
 
   const handleCreateTenant = () => {
-    // addTenantClient({
-    //   variables: {
-    //     tenant_id: "QWE123",
-    //     code: "CLIENTQWE123",
-    //     name: "Client of QWE",
-    //     email: "clientqwe@hotmail.com",
-    //     contactPerson: "0188888888"
-    //   }
-    // })
-    // addTenantClient({
-    //   variables: {
-    //     tenant_id: "FIRM123",
-    //     code: "CLIENTB123",
-    //     name: "Client B",
-    //     email: "clientb@hotmail.com",
-    //     contactPerson: "0188888888"
-    //   }
-    // })
-
+    addTenantClient({
+      variables: {
+        tenant_id: "zxc",
+        code: "clientBofzxc",
+        name: "Client B zxc",
+        email: "clientb.zxc@hotmail.com",
+        contactPerson: "0166666666"
+      }
+    })
   }
 
   return (
